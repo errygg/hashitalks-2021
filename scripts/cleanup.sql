@@ -1,0 +1,4 @@
+USE mydb;
+DROP USER vault;
+DROP DATABASE mydb;
+FLUSH PRIVILEGES;
