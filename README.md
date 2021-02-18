@@ -1,24 +1,34 @@
-# Spring Cloud Vault Example
+# hashitalks-2021
 
-This project includes a demo on how to consume Vault KVs and Dynamic MySQL
-database credentials in a Spring App using annotations.
+This is the project that I used for HashiTalks 2021 on Spring Cloud and Vault.
+
+This project includes a demo on how to consume Vault Dynamic MySQL
+database credentials in a Spring App using annotations. The deployment uses
+Waypoint to deploy to Docker for Mac as well as Docker for Mac Kubernetes.
 
 ## Demo Steps
 
-1. Start Vault and MySQL
+1. Start Vault, MySQL, Waypoint, and Kubernetes
 
 ```sh
-cd ./scripts
+cd ./scripts/vault/
 ./start-vault.sh
+cd ../mysql/
 ./start-mysql.sh
+cd ../waypoint/
+./start-waypoint.sh
 cd ../
 ```
 
 2. Configure Vault
 
 ```sh
+cd ./vault/
 ./configure-vault.sh
+cd ../../
 ```
+
+### Vault Token Authentication with Docker
 
 3. Get the root token from the output file
 
@@ -26,38 +36,89 @@ cd ../
 cat /tmp/vault-output.txt | grep "Root Token"
 ```
 
-Copy the root token to the `spring.cloud.vault.token` file in
-`./src/main/resources/bootstrap.properties` file.
+Copy the root token to the `spring.cloud.vault.token` value in
+`./src/main/resources/bootstrap.yml` file.
 
-> This repo will be updated soon to use other authentication methods
-
-4. Run the build
+4. Initialize Waypoint
 
 ```sh
-./gradlew bootRun
+waypoint init
 ```
 
-### Endpoints
-There are a few endpoints you can use to see the KV, credentials, and database
-data.
+5. Run the build/deploy
 
-5. `/getdbcredentials`
+```sh
+waypoint up
+```
+
+Open the deployment URL and view the page.
+
+### Vault Kubernetes Authentication with Kubernetes
+
+6. Reconfigure `bootstrap.yml` to use Kubernetes authentication
+
+```yaml
+...
+    # authentication: TOKEN
+    # token: s.D6Zb5rPAYXcvuze6FR2I0GZL
+
+    authentication: KUBERNETES
+    kubernetes:
+      role: app
+      kubernetes-path: kubernetes
+...
+```
+
+7. Reconfigure `waypoint.hcl` to deploy and release to Kubernetes
+
+```hcl
+...
+  deploy {
+    /*use "docker" {
+      service_port = 8080
+    }*/
+    use "kubernetes" {
+      service_port = 8080
+      service_account = "vault-auth"
+    }
+  }
+
+  release {
+    use "kubernetes" {
+      load_balancer = true
+    }
+  }
+...
+```
+
+8. Run the build/deploy
+
+```sh
+waypoint up
+```
+
+Open the release URL (should be http://localhost) and view the page.
+
+### Endpoints
+There are a few endpoints you can use to see the credentials, database
+data, and restart.
+
+9. `/getdbcredentials`
 
 Will output the dynamically generated database `user`. This demonstrates that
 the dynamic user is generated using the Vault configurations in `bootstrap.yml`
 in conjunction with the Autowired DataSource.
 
-6. `/getkvdata`
-
-Will output the KV data entered during the vault configuration step above. This
-demonstrates how to use Value bean annotations to map data in the Vault KV.
-
-7. `/getdbdata`
+10. `/getdbdata`
 
 Will output data entered into the database during the MySQL start above. This
 demonstrates that the dynamically generated database credentials can be used to
 successfully pull data from the database and map to a Spring Model.
 
+11. `/restart`
+
+Will restart the application and create a new dynamic database credential.
+
 ## Cleanup
 
-8. Cleanup the Vault deployment by running `./scripts/cleanup.sh`
+12. Cleanup the deployment by running `cd ./scripts; ./cleanup.sh`

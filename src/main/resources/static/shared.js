@@ -12,10 +12,10 @@ $('#restart').click(function(event) {
       url: url,
       dataType: "test",
       success: function(response, textStatus, jqXHR) {
-          alert("restart happend!")
+          alert("restart happened!")
       },
       error: function(jqXHR, textStatus, errorThrown) {
-          $('#username').html("New username and password has been generated! Please click <a href='/getdbcredentials'>here</a> to obtain new dynamic credentials")
+          $('#username').html("New database `username` and `password` has been generated! Please click <a href='/getdbcredentials'>here</a> to view the new dynamic credentials")
       },
   });
 }); // End of Ajax

@@ -5,3 +5,5 @@ bin
 .classpath
 .settings
 .project
+.waypoint
+waypoint-server-snapshot*

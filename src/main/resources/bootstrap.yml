@@ -1,26 +1,26 @@
 spring:
   cloud.vault:
-    uri: http://127.0.0.1:8200
+    uri: http://host.docker.internal:8200
 
-    # Using Token authentication to test
-    token: s.kOtly6La5JyyrTHaJ1iRmiXQ
+    # authentication: TOKEN
+    # token: s.D6Zb5rPAYXcvuze6FR2I0GZL
 
-    #namespace: ns1
-    #authentication: pcf
-    #role: flasktest
-    #pcf.pcf-path: cf
+    authentication: KUBERNETES
+    kubernetes:
+      role: app
+      kubernetes-path: kubernetes
 
-    # KV configurations, this enables reading from the Vault path of: /kv/vaultpcf
+    # KV secret engine configurations, this enables reading from the Vault path of: /kv/application
     kv:
      enabled: true
      backend: kv
      default-context: application
 
-    # MySQL database configurations, this enables reading from the Vault path of: /database
+    # MySQL database secret engine configurations, this enables reading from the Vault path of: /database
     database:
       enabled: true
       role: db-spring
       backend: database
 
   # Datasource URL for MySQL
-  datasource.url: "jdbc:mysql://localhost:3306/mydb?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC"
+  datasource.url: "jdbc:mysql://host.docker.internal:3306/mydb?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC"

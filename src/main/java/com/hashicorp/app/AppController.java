@@ -11,26 +11,26 @@ import java.sql.Statement;
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+//import org.springframework.beans.factory.annotation.Value;
 import org.springframework.ui.Model;
 
 @Controller
 public class AppController {
 
-  // Use name annotation to grab value from Vault KV
-  @Value("${name}")
-  public String kvName;
+  // // Use name annotation to grab value from Vault KV
+  // @Value("${name}")
+  // public String kvName;
 
-  // Use email annotation to grab value from Vault KV
-  @Value("${email}")
-  public String kvEmail;
+  // // Use email annotation to grab value from Vault KV
+  // @Value("${email}")
+  // public String kvEmail;
 
-  @RequestMapping("/getkvdata")
-  public String getKvData(Model model) {
-    model.addAttribute("name", kvName);
-    model.addAttribute("email", kvEmail);
-    return "getkvdata";
-  }
+  // @RequestMapping("/getkvdata")
+  // public String getKvData(Model model) {
+  //   model.addAttribute("name", kvName);
+  //   model.addAttribute("email", kvEmail);
+  //   return "getkvdata";
+  // }
 
   @Autowired
   DataSource dataSource;
@@ -39,7 +39,7 @@ public class AppController {
   private String getDbCredentials(Model model) throws Exception {
     try (
       Connection connection = dataSource.getConnection();
-      Statement statement = connection.createStatement()
+      Statement statement = connection.createStatement();
     ) {
 
       ResultSet resultSet = statement.executeQuery("SELECT USER();");
@@ -54,7 +54,7 @@ public class AppController {
   private String getDbData(Model model) throws Exception {
     try (
       Connection connection = dataSource.getConnection();
-      Statement statement = connection.createStatement()
+      Statement statement = connection.createStatement();
     ) {
       ResultSet resultSet = statement.executeQuery("select name, email from users");
       resultSet.next();
